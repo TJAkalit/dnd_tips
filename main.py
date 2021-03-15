@@ -7,6 +7,133 @@ import logging
 import hashlib
 import datetime
 
+# type  1 - INTEGER, 2 - TEXT, 3 - REAL,  
+
+tables_template = {
+    "Session": {
+        "id": {
+            "type": 1,
+            "null": False,
+            "unique": True,
+        },
+        "hash_key": {
+            "type": 2,
+            "null": False,
+            "unique": True,
+        },
+        "create_date": {
+            "type": 1,
+            "null": False,
+            "unique": False,
+        },
+        "renew_date": {
+            "type": 1,
+            "null": False,
+            "unique": False,
+        },
+        "removed": {
+            "type": 1,
+            "null": True,
+            "unique": False,
+        },
+        "p_k": {
+            "exist": True,
+            "column": "id",
+            "autoincrement": True,
+        }
+    },
+    # "Character": None,
+    # "Realm": None,
+    # "Attribute": None,
+    # "AttributePrototype": None,
+    # "AttributeTemplate": None,
+    # "AttributeTemplate_AttributePrototype": None,
+    # "Class": None,
+    # "CharacterClass": None,
+    # "CharacterClass_Realm": None,
+    # "Place": None,
+    # "Place_Realm": None,
+    # "PlaceTemplate": None,
+    # "Place_PlaceTemplate": None,
+    # "Stat": None,
+    # "StatPrototype": None,
+    # "StatTemplate": None,
+    # "StatTemplate_StatPrototype": None
+}
+
+def init_tables(db_file):
+
+    try:
+    
+        db_file = str(db_file)
+        db = connect(db_file)
+    
+    except Exception as ex:
+        
+        logging.error(
+            "[INIT_TABLES] DB connect failed! {Except:s}".format(
+                Except = ex
+            )
+        )
+
+    curs = db.cursor()
+
+    # Tables name check
+    curs.execute("""SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'""")
+    temp = curs.fetchall()
+    todo_tables = set(x for x in tables_template)
+
+    for i in temp:
+        
+        todo_tables.discard(i[0])
+
+    for table in todo_tables:
+
+        logging.warning(
+                "[INIT_TABLES] not found table [{not_found_table}]".format(
+                    not_found_table = table
+                )
+            )
+
+    for table in todo_tables:
+
+        generated_query = ""
+        generated_query += """CREATE TABLE IF NOT EXISTS {table_name} \n(""".format(table_name = table)
+        d = dict()
+                
+        for column in tables_template[table]:
+
+            if column in {"p_k"}: continue
+
+            d["name"] = column
+            d["data_type"] = {
+                1: "INTEGER",
+                2: "TEXT",
+                3: "REAL",
+                4: "BLOB",
+            }[tables_template[table][column]["type"]]
+            d["isnull"] = " NOT NULL" if not tables_template[table][column]["null"] else ""
+            d["unique"] = " UNIQUE" if tables_template[table][column]["unique"] else ""
+
+            generated_query += """ {name} {data_type}{isnull}{unique},\n""".format(
+                name = column,
+                data_type = d["data_type"],
+                isnull = d["isnull"],
+                unique = d["unique"],
+            )
+        if tables_template[table]["p_k"]["exist"]:
+
+            generated_query += """PRIMARY KEY (\"{column}\"{ai})""".format(
+                column = tables_template[table]["p_k"]["column"],
+                ai = " AUTOINCREMENT" if tables_template[table]["p_k"]["autoincrement"] else ""
+            )
+        generated_query += "\n);"
+        print(generated_query)
+        ########
+        # TODO: прописать параметры таблиц
+        # TODO: выполнение предгенерированных запросов
+        ########
+
 class SessionManager:
 
     def __init__(self):
@@ -111,6 +238,7 @@ if __name__ == "__main__":
     app = Flask(__name__)
     SM = SessionManager()
 
+    init_tables("sessions.sqlite")
     @app.route("/")
     @app.route("/index.html")
     @app.route("/index.php")
