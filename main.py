@@ -7,59 +7,7 @@ import logging
 import hashlib
 import datetime
 
-# type  1 - INTEGER, 2 - TEXT, 3 - REAL,  
-
-tables_template = {
-    "Session": {
-        "id": {
-            "type": 1,
-            "null": False,
-            "unique": True,
-        },
-        "hash_key": {
-            "type": 2,
-            "null": False,
-            "unique": True,
-        },
-        "create_date": {
-            "type": 1,
-            "null": False,
-            "unique": False,
-        },
-        "renew_date": {
-            "type": 1,
-            "null": False,
-            "unique": False,
-        },
-        "removed": {
-            "type": 1,
-            "null": True,
-            "unique": False,
-        },
-        "p_k": {
-            "exist": True,
-            "column": "id",
-            "autoincrement": True,
-        }
-    },
-    # "Character": None,
-    # "Realm": None,
-    # "Attribute": None,
-    # "AttributePrototype": None,
-    # "AttributeTemplate": None,
-    # "AttributeTemplate_AttributePrototype": None,
-    # "Class": None,
-    # "CharacterClass": None,
-    # "CharacterClass_Realm": None,
-    # "Place": None,
-    # "Place_Realm": None,
-    # "PlaceTemplate": None,
-    # "Place_PlaceTemplate": None,
-    # "Stat": None,
-    # "StatPrototype": None,
-    # "StatTemplate": None,
-    # "StatTemplate_StatPrototype": None
-}
+from background_static.templates import tables_template
 
 def init_tables(db_file):
 
