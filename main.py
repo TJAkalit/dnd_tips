@@ -51,7 +51,7 @@ def init_tables(db_file):
                 
         for column in tables_template[table]:
 
-            if column in {"p_k"}: continue
+            if column in {"p_k", "f_k"}: continue
 
             d["name"] = column
             d["data_type"] = {
@@ -75,6 +75,11 @@ def init_tables(db_file):
                 column = tables_template[table]["p_k"]["column"],
                 ai = " AUTOINCREMENT" if tables_template[table]["p_k"]["autoincrement"] else ""
             )
+
+        if tables_template[table]["f_k"]["exist"]:
+            pass
+            # TODO: обработка инстркции вторичного ключа
+            
         generated_query += "\n);"
         print(generated_query)
         ########
