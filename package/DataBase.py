@@ -116,6 +116,15 @@ class Session(DataSet):
     pk = {"column": "id", "ai": True}
     result_obj = ResultItem
 
+class World(DataSet):
+    main_table = "world"
+    coumns = {
+        "id": {"type": 1, "null": False, "unique": True, },
+        "name": {"type": 2, "null": False, "unique": True, },
+        "create_date": {"type": 1, "null": False, "unique": False, },
+        "removed": {"type": 1, "null": False, "unique": False, },
+    }
+
 if __name__ == "__main__":
 
     pass
